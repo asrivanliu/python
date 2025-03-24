@@ -126,9 +126,9 @@ def getCustomerDataFromOdoo(connOdoo, customerDataType, customerDataStatus, edit
         f"{ 'a.is_company=\'t\' AND ' if customerDataType == CustomerDataType.Company else 'a.is_company=\'f\' AND ' if customerDataType == CustomerDataType.Contact else '' } "
         f"{ f'LOWER(a.name)=\'{company_name.strip().casefold()}\' AND ' if company_name is not None else '' } "
         f"{ 'a.active=\'t\' AND ' if customerDataStatus == CustomerDataStatus.Active else 'a.active=\'f\' AND ' if customerDataStatus == CustomerDataStatus.Inactive else '' } "       
-        f"((a.write_date >= '{editStartDate} 00:00:00' AND a.write_date < '{editEndDate} 23:59:59') or a.write_date is NULL) "
+        f"((a.write_date >= '{editStartDate} 00:00:00' AND a.write_date < '{editEndDate} 23:59:59') OR a.write_date IS NULL) "
         f"AND u.Login IS NULL "
-        f"ORDER BY a.id desc, b.id desc;"
+        f"ORDER BY a.id DESC, b.id DESC;"
     )
     logging.info(f"Get Odoo Customer Company Data Query: {queryOdooCustomerData}")
     curOdooCustomerData.execute(queryOdooCustomerData)
