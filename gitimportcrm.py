@@ -113,22 +113,22 @@ class DatabaseType(Enum):
 def getCustomerDataFromOdoo(connOdoo, customerDataType, customerDataStatus, editStartDate='2020-01-01', editEndDate='2099-12-31', company_name=None):
     curOdooCustomerData = connOdoo.cursor(cursor_factory=RealDictCursor)
     queryOdooCustomerData = (
-        f"SELECT "
-        f"CASE WHEN a.is_company = 't' THEN 'Company' ELSE 'Contact' END AS \"type\", "
-        f"CASE WHEN a.is_company = 't' THEN a.id ELSE b.id END AS company_id, "
-        f"CASE WHEN a.is_company = 't' THEN TRIM(REPLACE(REPLACE(a.name, '’', ''''), '''', '''''')) ELSE TRIM(REPLACE(REPLACE(b.name, '’', ''''), '''', '''''')) END AS company_name, "
-        f"CASE WHEN a.is_company = 't' THEN NULL ELSE a.id END AS contact_id, "
-        f"CASE WHEN a.is_company = 't' THEN NULL ELSE TRIM(a.name) END AS contact_name "
-        f"FROM res_partner AS a "
-        f"LEFT JOIN res_partner AS b ON a.parent_id = b.id "
-        f"LEFT JOIN res_users AS u ON a.id = u.partner_id "
-        f"WHERE "
-        f"{ 'a.is_company=\'t\' AND ' if customerDataType == CustomerDataType.Company else 'a.is_company=\'f\' AND ' if customerDataType == CustomerDataType.Contact else '' } "
-        f"{ f'LOWER(a.name)=\'{company_name.strip().casefold()}\' AND ' if company_name is not None else '' } "
-        f"{ 'a.active=\'t\' AND ' if customerDataStatus == CustomerDataStatus.Active else 'a.active=\'f\' AND ' if customerDataStatus == CustomerDataStatus.Inactive else '' } "       
-        f"((a.write_date >= '{editStartDate} 00:00:00' AND a.write_date < '{editEndDate} 23:59:59') OR a.write_date IS NULL) "
-        f"AND u.Login IS NULL "
-        f"ORDER BY a.id DESC, b.id DESC;"
+    f"SELECT "
+    f"CASE WHEN a.is_company = 't' THEN 'Company' ELSE 'Contact' END AS \"type\", "
+    f"CASE WHEN a.is_company = 't' THEN a.id ELSE b.id END AS company_id, "
+    f"CASE WHEN a.is_company = 't' THEN TRIM(REPLACE(REPLACE(a.name, '’', ''''), '''', '''''')) ELSE TRIM(REPLACE(REPLACE(b.name, '’', ''''), '''', '''''')) END AS company_name, "
+    f"CASE WHEN a.is_company = 't' THEN NULL ELSE a.id END AS contact_id, "
+    f"CASE WHEN a.is_company = 't' THEN NULL ELSE TRIM(a.name) END AS contact_name "
+    f"FROM res_partner AS a "
+    f"LEFT JOIN res_partner AS b ON a.parent_id = b.id "
+    f"LEFT JOIN res_users AS u ON a.id = u.partner_id "
+    f"WHERE "
+    f"{ 'a.is_company=\'t\' AND ' if customerDataType == CustomerDataType.Company else 'a.is_company=\'f\' AND ' if customerDataType == CustomerDataType.Contact else '' } "
+    f"{ f'LOWER(a.name)=\'{company_name.strip().casefold()}\' AND ' if company_name is not None else '' } "
+    f"{ 'a.active=\'t\' AND ' if customerDataStatus == CustomerDataStatus.Active else 'a.active=\'f\' AND ' if customerDataStatus == CustomerDataStatus.Inactive else '' } "       
+    f"((a.write_date >= '{editStartDate} 00:00:00' AND a.write_date < '{editEndDate} 23:59:59') OR a.write_date IS NULL) "
+    f"AND u.Login IS NULL "
+    f"ORDER BY a.id DESC, b.id DESC;"
     )
     logging.info(f"Get Odoo Customer Company Data Query: {queryOdooCustomerData}")
     curOdooCustomerData.execute(queryOdooCustomerData)
